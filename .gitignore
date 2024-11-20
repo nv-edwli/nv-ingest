@@ -176,7 +176,6 @@ tags
 # Persistent undo
 [._]*.un~
 
-
 # End of https://www.gitignore.io/api/vim,c++,cmake,python,synology
 
 ./build
@@ -208,7 +207,6 @@ triton_models/paddle
 # Ignore user-defined clangd settings
 .clangd
 
-
 # Ignore saved benchmark data
 tests/benchmarks/.benchmarks/
 
@@ -216,3 +214,25 @@ helm/charts/*
 
 # Ignore output from common examples
 processed_docs
+
+# Ignore generated or temporary files managed by the Workbench
+.project/*
+!.project/spec.yaml
+!.project/configpacks
+
+# General ignores
+.DS_Store
+
+# Temp directories, notebooks created by jupyterlab
+.Trash-*/
+.jupyter/
+.local/
+
+# Python distribution / packaging
+share/python-wheels/
+
+.nox/
+*.py,cover
+cover/
+
+# Workbench Project Layout
