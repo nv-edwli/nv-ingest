@@ -130,7 +130,8 @@ services:
       dockerfile: "./Dockerfile"
       target: runtime
     volumes:
-      - ${DATASET_ROOT:-./data}:/workspace/data
+      - ~/nvidia-workbench/nv-edwli-nv-ingest/data:/workspace/data
+    #   - ${DATASET_ROOT:-./data}:/workspace/data
     ports:
       - "7670:7670"
     cap_add:
@@ -195,17 +196,16 @@ services:
       - "55680:55679" # zpages extension
     depends_on:
       - zipkin
-    environment:
+    environment: 
       - NVWB_TRIM_PREFIX=true
 
   zipkin:
     image: openzipkin/zipkin
     environment:
       JAVA_OPTS: "-Xms2g -Xmx2g -XX:+ExitOnOutOfMemoryError"
+      NVWB_TRIM_PREFIX: true
     ports:
       - "9411:9411" # Zipkin UI and API
-    environment:
-      - NVWB_TRIM_PREFIX=true
 
   prometheus:
     image: prom/prometheus:latest
@@ -223,7 +223,7 @@ services:
       - ./config/prometheus.yaml:/etc/prometheus/prometheus-config.yaml
     ports:
       - "9090:9090"
-    environment:
+    environment: 
       - NVWB_TRIM_PREFIX=true
 
   grafana:
@@ -231,7 +231,7 @@ services:
     image: grafana/grafana
     ports:
       - "3000:3000"
-    environment:
+    environment: 
       - NVWB_TRIM_PREFIX=true
 
 #  etcd:
@@ -320,4 +320,3 @@ services:
 #      - "3001:3000"
 #    depends_on:
 #      - "milvus"
-
