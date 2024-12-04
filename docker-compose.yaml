@@ -7,6 +7,8 @@ services:
     image: "redis/redis-stack"
     ports:
       - "6379:6379"
+    environment:
+      - NVWB_TRIM_PREFIX=true
 
   yolox:
     image: ${YOLOX_IMAGE:-nvcr.io/ohlfw0olaadg/ea-participants/nv-yolox-structured-images-v1}:${YOLOX_TAG:-0.2.0}
@@ -20,6 +22,7 @@ services:
       - NIM_TRITON_LOG_VERBOSE=1
       - NGC_API_KEY=${NIM_NGC_API_KEY:-${NGC_API_KEY:-ngcapikey}}
       - CUDA_VISIBLE_DEVICES=0
+      - NVWB_TRIM_PREFIX=true
     deploy:
       resources:
         reservations:
@@ -41,6 +44,7 @@ services:
       - NIM_TRITON_LOG_VERBOSE=1
       - NGC_API_KEY=${NIM_NGC_API_KEY:-${NGC_API_KEY:-ngcapikey}}
       - CUDA_VISIBLE_DEVICES=0
+      - NVWB_TRIM_PREFIX=true
     deploy:
       resources:
         reservations:
@@ -63,6 +67,7 @@ services:
       - NIM_TRITON_LOG_VERBOSE=1
       - NGC_API_KEY=${NIM_NGC_API_KEY:-${NGC_API_KEY:-ngcapikey}}
       - CUDA_VISIBLE_DEVICES=0
+      - NVWB_TRIM_PREFIX=true
     deploy:
       resources:
         reservations:
@@ -85,6 +90,7 @@ services:
       - NIM_TRITON_LOG_VERBOSE=1
       - NGC_API_KEY=${NIM_NGC_API_KEY:-${NGC_API_KEY:-ngcapikey}}
       - CUDA_VISIBLE_DEVICES=0
+      - NVWB_TRIM_PREFIX=true
     deploy:
       resources:
         reservations:
@@ -107,6 +113,7 @@ services:
       - NIM_TRITON_LOG_VERBOSE=1
       - NGC_API_KEY=${NIM_NGC_API_KEY:-${NGC_API_KEY:-ngcapikey}}
       - CUDA_VISIBLE_DEVICES=0
+      - NVWB_TRIM_PREFIX=true
     deploy:
       resources:
         reservations:
@@ -158,6 +165,7 @@ services:
       - YOLOX_HTTP_ENDPOINT=http://yolox:8000/v1/infer
       - YOLOX_INFER_PROTOCOL=grpc
       - VLM_CAPTION_ENDPOINT=https://ai.api.nvidia.com/v1/gr/meta/llama-3.2-90b-vision-instruct/chat/completions
+      - NVWB_TRIM_PREFIX=true
     healthcheck:
       test: curl --fail http://nv-ingest-ms-runtime:7670/v1/health/ready || exit 1
       interval: 10s
@@ -187,6 +195,8 @@ services:
       - "55680:55679" # zpages extension
     depends_on:
       - zipkin
+    environment:
+      - NVWB_TRIM_PREFIX=true
 
   zipkin:
     image: openzipkin/zipkin
@@ -194,6 +204,8 @@ services:
       JAVA_OPTS: "-Xms2g -Xmx2g -XX:+ExitOnOutOfMemoryError"
     ports:
       - "9411:9411" # Zipkin UI and API
+    environment:
+      - NVWB_TRIM_PREFIX=true
 
   prometheus:
     image: prom/prometheus:latest
@@ -211,12 +223,16 @@ services:
       - ./config/prometheus.yaml:/etc/prometheus/prometheus-config.yaml
     ports:
       - "9090:9090"
+    environment:
+      - NVWB_TRIM_PREFIX=true
 
   grafana:
     container_name: grafana-service
     image: grafana/grafana
     ports:
       - "3000:3000"
+    environment:
+      - NVWB_TRIM_PREFIX=true
 
 #  etcd:
 #    # Turn on to leverage the `vdb_upload` task
