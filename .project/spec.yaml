@@ -111,8 +111,8 @@ execution:
   apps: []
   resources:
     gpu:
-      requested: 0
-    sharedMemoryMB: 0
+      requested: 2
+    sharedMemoryMB: 2048
   secrets:
   - variable: NGC_API_KEY
     description: ""
