@@ -26,6 +26,7 @@ from nv_ingest_client.primitives.tasks import FilterTask
 from nv_ingest_client.primitives.tasks import SplitTask
 from nv_ingest_client.primitives.tasks import StoreTask
 from nv_ingest_client.primitives.tasks import VdbUploadTask
+from nv_ingest_client.primitives.tasks import StoreEmbedTask
 from nv_ingest_client.primitives.tasks.chart_extraction import ChartExtractionTask
 from nv_ingest_client.primitives.tasks.table_extraction import TableExtractionTask
 from nv_ingest_client.util.util import filter_function_kwargs
@@ -65,11 +66,11 @@ class Ingestor:
     """
 
     def __init__(
-        self,
-        documents: Optional[List[str]] = None,
-        client: Optional[NvIngestClient] = None,
-        job_queue_id: str = DEFAULT_JOB_QUEUE_ID,
-        **kwargs,
+            self,
+            documents: Optional[List[str]] = None,
+            client: Optional[NvIngestClient] = None,
+            job_queue_id: str = DEFAULT_JOB_QUEUE_ID,
+            **kwargs,
     ):
         self._documents = documents or []
         self._client = client
@@ -83,6 +84,7 @@ class Ingestor:
         self._job_specs = None
         self._job_ids = None
         self._job_states = None
+        self._job_id_to_source_id = {}
 
         if self._check_files_local():
             self._job_specs = BatchJobSpec(self._documents)
@@ -242,6 +244,7 @@ class Ingestor:
         self._prepare_ingest_run()
 
         self._job_ids = self._client.add_job(self._job_specs)
+
         future_to_job_id = self._client.submit_job_async(self._job_ids, self._job_queue_id, **kwargs)
         self._job_states = {job_id: self._client._get_and_check_job_state(job_id) for job_id in self._job_ids}
 
@@ -299,9 +302,10 @@ class Ingestor:
             .dedup() \
             .filter() \
             .split() \
-            .embed()
-            # .store() \
-            # .vdb_upload()
+            .embed() \
+            .store_embed()
+        # .store() \
+        # .vdb_upload()
         # fmt: on
         return self
 
@@ -432,6 +436,26 @@ class Ingestor:
             Returns self for chaining.
         """
         store_task = StoreTask(**kwargs)
+        self._job_specs.add_task(store_task)
+
+        return self
+
+    @ensure_job_specs
+    def store_embed(self, **kwargs: Any) -> "Ingestor":
+        """
+        Adds a StoreTask to the batch job specification.
+
+        Parameters
+        ----------
+        kwargs : dict
+            Parameters specific to the StoreTask.
+
+        Returns
+        -------
+        Ingestor
+            Returns self for chaining.
+        """
+        store_task = StoreEmbedTask(**kwargs)
         self._job_specs.add_task(store_task)
 
         return self
